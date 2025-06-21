@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, FileText } from 'lucide-react';
+import { Plus, Search, Filter, FileText, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ProjectCard } from './ProjectCard';
 import { CreateProjectModal } from './CreateProjectModal';
 import { ProjectDetailsModal } from './ProjectDetailsModal';
+import { PersonaModal } from './PersonaModal';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
@@ -28,6 +29,7 @@ export const Dashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [stats, setStats] = useState({
     activeProjects: 0,
@@ -188,13 +190,23 @@ export const Dashboard: React.FC = () => {
             <p className="text-gray-600 mt-1">Manage your sales and marketing projects</p>
           </div>
           
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg"
-          >
-            <Plus className="h-5 w-5" />
-            <span>New Project</span>
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setIsPersonaModalOpen(true)}
+              className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg"
+            >
+              <User className="h-5 w-5" />
+              <span>My Role</span>
+            </button>
+            
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg"
+            >
+              <Plus className="h-5 w-5" />
+              <span>New Project</span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -332,6 +344,12 @@ export const Dashboard: React.FC = () => {
         project={selectedProject}
         onProjectUpdated={handleProjectUpdated}
         onProjectDeleted={handleProjectDeleted}
+      />
+
+      <PersonaModal 
+        isOpen={isPersonaModalOpen}
+        onClose={() => setIsPersonaModalOpen(false)}
+        onPersonaCreated={() => {}}
       />
     </div>
   );

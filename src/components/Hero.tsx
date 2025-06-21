@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { LavaLamp } from './LavaLamp';
+import { AnimatedText } from './ui/animated-text';
 
 interface HeroProps {
   onGetStarted: () => void;
@@ -50,15 +51,22 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
       {/* Content Overlay */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
         <div className="flex justify-center mb-6">
-          <div className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium border border-white/20">
+          <div className="flex items-center space-x-2 bg-black/70 backdrop-blur-sm text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium border border-white/20">
             <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>AI-Powered Sales & Marketing Copilot</span>
           </div>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 leading-tight tracking-tight text-black px-4 sm:px-0">
-          GrowMint
-        </h1>
+        <AnimatedText 
+          text="GrowMint"
+          textClassName="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 leading-tight tracking-tight text-black px-4 sm:px-0"
+          underlineGradient="from-green-200 via-green-500 to-green-1000"
+          underlineHeight="h-2 lg:h-3"
+          underlineOffset="bottom-1 lg:bottom-2"
+          duration={0.08}
+          delay={0.08}
+          animatedGradient={true}
+        />
         
         <p className="text-xl sm:text-2xl lg:text-4xl mb-6 font-black tracking-wide text-black px-4 sm:px-0">
           Sell smarter. Market sharper.

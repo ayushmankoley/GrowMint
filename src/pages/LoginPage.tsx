@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AnimatedText } from '../components/ui/animated-text';
 
 
 const vertexShader = `
@@ -352,10 +353,17 @@ export const LoginPage: React.FC = () => {
       <div className="absolute lg:relative inset-0 lg:inset-auto lg:w-2/5 lg:bg-gray-50/30 flex flex-col justify-center items-center px-4 lg:px-8 py-8 lg:py-12 z-30">
         <div className="w-full max-w-sm lg:max-w-md">
           <div className="text-center mb-6">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
-              Welcome to GrowMint
-            </h2>
-            <p className="text-sm lg:text-base text-gray-600">
+            <AnimatedText 
+              text="GrowMint"
+              textClassName="text-2xl lg:text-3xl font-bold text-gray-900 mb-2"
+              underlineGradient="from-green-400 via-green-600 to-green-800"
+              underlineHeight="h-0.5"
+              underlineOffset="bottom-0.5"
+              duration={0.15}
+              delay={0.06}
+              animatedGradient={true}
+            />
+            <p className="text-sm lg:text-base text-gray-600 mt-4">
               Sign in securely to access your account
             </p>
           </div>
