@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
             transition={{ duration: 0.3 }}
           >
             <img 
-              src="src\images\landscape_logo_ts2.png" 
+              src="https://raw.githubusercontent.com/ayushmankoley/GrowMint/refs/heads/main/src/images/landscape_logo_ts2.png" 
               alt="GrowMint"
               className="h-14 w-48 object-contain rounded-lg bg-transparent"
             />
