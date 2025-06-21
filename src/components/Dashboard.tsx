@@ -21,9 +21,20 @@ interface Project {
   context_summary: string | null;
 }
 
+interface Persona {
+  id: string;
+  persona_name: string;
+  role_title: string;
+  company_or_business: string | null;
+  industry: string | null;
+  description: string | null;
+  is_default: boolean;
+}
+
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [personas, setPersonas] = useState<Persona[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -73,8 +84,29 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  // Fetch personas from Supabase
+  const fetchPersonas = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_personas')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false });
+
+      if (error) throw error;
+      setPersonas(data || []);
+    } catch (error) {
+      console.error('Error fetching personas:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchProjects();
+    if (user) {
+      fetchProjects();
+      fetchPersonas();
+    }
   }, [user]);
 
   const handleProjectCreated = () => {
@@ -90,6 +122,10 @@ export const Dashboard: React.FC = () => {
     fetchProjects(); // Refresh the project list
     setIsDetailsModalOpen(false);
     setSelectedProject(null);
+  };
+
+  const handlePersonaCreated = () => {
+    fetchPersonas(); // Refresh the persona list
   };
 
   // Project card actions
@@ -199,13 +235,28 @@ export const Dashboard: React.FC = () => {
               <span>My Role</span>
             </button>
             
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg"
-            >
-              <Plus className="h-5 w-5" />
-              <span>New Project</span>
-            </button>
+            <div className="relative group">
+              <button
+                onClick={() => personas.length > 0 && setIsCreateModalOpen(true)}
+                disabled={personas.length === 0}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform flex items-center space-x-2 shadow-lg ${
+                  personas.length > 0
+                    ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white hover:from-blue-700 hover:to-teal-700 hover:scale-105'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <Plus className="h-5 w-5" />
+                <span>New Project</span>
+              </button>
+              
+              {/* Tooltip for disabled button */}
+              {personas.length === 0 && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                  Create a persona first to enable project creation
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -315,18 +366,35 @@ export const Dashboard: React.FC = () => {
           </h3>
           <p className="text-gray-500 mb-4">
             {projects.length === 0 
-              ? 'Create your first project to start converting leads with AI'
+              ? personas.length === 0 
+                ? 'Create a persona first, then start converting leads with AI-powered projects'
+                : 'Create your first project to start converting leads with AI'
               : 'Try adjusting your search or filter criteria'
             }
           </p>
           {projects.length === 0 && (
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 mx-auto shadow-lg"
-            >
-              <Plus className="h-5 w-5" />
-              <span>Create First Project</span>
-            </button>
+            <div className="relative group">
+              <button
+                onClick={() => personas.length > 0 && setIsCreateModalOpen(true)}
+                disabled={personas.length === 0}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform flex items-center space-x-2 mx-auto shadow-lg ${
+                  personas.length > 0
+                    ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white hover:from-blue-700 hover:to-teal-700 hover:scale-105'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <Plus className="h-5 w-5" />
+                <span>Create First Project</span>
+              </button>
+              
+              {/* Tooltip for disabled button */}
+              {personas.length === 0 && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                  Create a persona first to enable project creation
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -349,7 +417,7 @@ export const Dashboard: React.FC = () => {
       <PersonaModal 
         isOpen={isPersonaModalOpen}
         onClose={() => setIsPersonaModalOpen(false)}
-        onPersonaCreated={() => {}}
+        onPersonaCreated={handlePersonaCreated}
       />
     </div>
   );
