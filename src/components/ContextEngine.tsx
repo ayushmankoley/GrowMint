@@ -101,7 +101,7 @@ export const ContextEngine: React.FC = () => {
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingContext, setLoadingContext] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch initial data
   useEffect(() => {
@@ -114,7 +114,12 @@ export const ContextEngine: React.FC = () => {
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages]);
 
   const fetchProjects = async () => {
@@ -514,7 +519,7 @@ Provide a response using ONLY the project information provided above. Reference 
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-40 h-screen flex flex-col">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-19 h-[95vh] flex flex-col">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Context Engine</h1>
         <p className="text-gray-600">Intelligent conversations about your projects with AI</p>
@@ -635,7 +640,7 @@ Provide a response using ONLY the project information provided above. Reference 
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={messagesContainerRef}>
             {currentConversation ? (
               <>
                 {/* Context Warning */}
@@ -728,7 +733,6 @@ Provide a response using ONLY the project information provided above. Reference 
                         </div>
                       </div>
                     )}
-                    <div ref={messagesEndRef} />
                   </>
                 )}
               </>
