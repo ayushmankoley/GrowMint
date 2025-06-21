@@ -74,7 +74,7 @@ function AppContent() {
           <Route path="/" element={<HomePage onGetStarted={handleGetStarted} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/comingsoon" element={<ComingSoonPage />} />
-          <Route path="/terms" element={<TermsPage />} /> {/* ✅ TERMS PAGE ROUTE */}
+          <Route path="/terms" element={<TermsPage />} /> 
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
 
@@ -115,7 +115,7 @@ function AppContent() {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <img 
-                  src="src\\images\\landscape_logo_ts2.png" 
+                  src="https://raw.githubusercontent.com/ayushmankoley/GrowMint/refs/heads/main/src/images/landscape_logo_ts2.png" 
                   alt="GrowMint"
                   className="h-25 w-60 object-contain"
                 />
