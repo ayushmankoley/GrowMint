@@ -51,7 +51,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
         {tier.name}
         {isPopular && (
           <Badge variant="secondary" className="z-10 bg-green-100 text-green-800 border-green-200">
-            🔥 Most Popular
+            🔥🔥🔥
           </Badge>
         )}
       </h2>

@@ -34,6 +34,7 @@ export const CivicAuthProvider: React.FC<CivicAuthProviderProps> = ({ children }
     <BaseCivicAuthProvider
       clientId={clientId}
       redirectUrl={`${window.location.origin}/auth/callback`}
+      iframeMode="embedded"
       onSignIn={handleSignIn}
       onSignOut={handleSignOut}
     >

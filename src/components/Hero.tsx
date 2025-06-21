@@ -48,8 +48,8 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
       }} />
       
       {/* Content Overlay */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="flex justify-center mb-6 mt-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
+        <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/20">
             <Sparkles className="h-4 w-4" />
             <span>AI-Powered Sales & Marketing Copilot</span>
@@ -65,12 +65,10 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
         </p>
         
         <p className="text-xl lg:text-2xl mb-12 max-w-4xl mx-auto leading-relaxed font-bold text-black">
-          Empower lean teams and founders to convert leads and scale campaigns using 
-          project-based, hyper-contextual AI assistance. Transform every lead into revenue 
-          with intelligent automation.
+          Stop juggling tools. Transform leads into revenue with AI-powered sales and marketing automation.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button
             onClick={onGetStarted}
             className="bg-green-700 text-white px-8 py-4 rounded-xl font-semibold text-lg border-2 border-green-700 hover:bg-green-800 hover:border-green-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
