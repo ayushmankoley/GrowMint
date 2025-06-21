@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Calendar, TrendingUp, Mail, FileText } from 'lucide-react';
+import { Plus, Search, Filter, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ProjectCard } from './ProjectCard';
 import { CreateProjectModal } from './CreateProjectModal';

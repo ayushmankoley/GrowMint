@@ -56,7 +56,6 @@ function AppContent() {
     );
   }
 
-  const isProtectedRoute = ['/dashboard', '/sales', '/marketing', '/terms', '/privacy'].includes(location.pathname);
   const isLoginPage = location.pathname === '/login';
 
   return (

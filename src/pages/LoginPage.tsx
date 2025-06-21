@@ -1,5 +1,5 @@
-import React, { useRef, useMemo, Suspense } from 'react';
-import { CivicAuthIframeContainer } from '@civic/auth/react';
+import React, { useRef, useMemo, Suspense, useEffect, useState } from 'react';
+import { CivicAuthIframeContainer, CivicAuthProvider } from '@civic/auth/react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ArrowLeft } from 'lucide-react';
@@ -61,7 +61,7 @@ float sdf(vec3 p) {
     vec3 p7 = rotate(p, vec3(1., 1., 1.), time/4.2);
     
     float final = sphereSDF(p1 - vec3(-0.5, 0.0, 0.0), 0.2);
-    float nextSphere = sphereSDF(p2 - vec3(0.55, 0.0, 0.0), 0.18);
+    float nextSphere = sphereSDF(p2 - vec3(-0.35, 0.0, 0.0), 0.18);
     final = smin(final, nextSphere, 0.1);
     nextSphere = sphereSDF(p2 - vec3(-0.8, 0.0, 0.0), 0.12);
     final = smin(final, nextSphere, 0.1);
@@ -74,7 +74,7 @@ float sdf(vec3 p) {
     final = smin(final, nextSphere, 0.1);
     nextSphere = sphereSDF(p7 - vec3(-0.6, -0.3, 0.0), 0.16);
     final = smin(final, nextSphere, 0.1);
-    nextSphere = sphereSDF(p5 - vec3(0.7, -0.2, 0.0), 0.13);
+    nextSphere = sphereSDF(p6 - vec3(0.7, -0.2, 0.0), 0.13);
     final = smin(final, nextSphere, 0.1);
     
     return final;
@@ -179,6 +179,21 @@ const FallbackBackground: React.FC = () => (
 );
 
 const SmallBubblesLavaLamp: React.FC = () => {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    // Simple initialization delay
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 50); // Minimal delay
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isReady) {
+    return <FallbackBackground />;
+  }
+
   return (
     <div style={{ 
       width: '100%', 
@@ -213,7 +228,102 @@ const SmallBubblesLavaLamp: React.FC = () => {
   );
 };
 
+// Isolated Civic Auth Component for Login Page
+const IsolatedCivicAuth: React.FC = () => {
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    // Force remount whenever location changes
+    setKey(prev => prev + 1);
+
+    // Preload iframe to reduce initialization time
+    const preloadIframe = document.createElement('iframe');
+    preloadIframe.style.display = 'none';
+    preloadIframe.src = 'about:blank';
+    document.body.appendChild(preloadIframe);
+    
+    // Clean up preload iframe after brief initialization
+    const cleanup = setTimeout(() => {
+      if (document.body.contains(preloadIframe)) {
+        document.body.removeChild(preloadIframe);
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(cleanup);
+      if (document.body.contains(preloadIframe)) {
+        document.body.removeChild(preloadIframe);
+      }
+    };
+  }, []);
+
+  const clientId = import.meta.env.VITE_CIVIC_CLIENT_ID;
+
+  if (!clientId) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-red-600">Error: Civic Auth not configured</p>
+      </div>
+    );
+  }
+
+  const handleSignIn = () => {
+    // Handle successful sign-in by redirecting the top-level window to dashboard
+    // This ensures we break out of any iframe context
+    try {
+      // Use top-level window to ensure we break out of iframe
+      window.top!.location.href = `${window.location.origin}/dashboard`;
+    } catch (error) {
+      // Fallback if top-level access is restricted
+      window.location.href = `${window.location.origin}/dashboard`;
+    }
+  };
+
+  return (
+    <CivicAuthProvider
+      key={`login-civic-${key}`}
+      clientId={clientId}
+      redirectUrl={`${window.location.origin}/dashboard`}
+      iframeMode="embedded"
+      onSignIn={handleSignIn}
+    >
+      <CivicAuthIframeContainer />
+    </CivicAuthProvider>
+  );
+};
+
 export const LoginPage: React.FC = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isNavigatedFrom, setIsNavigatedFrom] = useState(false);
+
+  useEffect(() => {
+
+    const isFromNavigation = Boolean(document.referrer && 
+                            document.referrer.includes(window.location.origin) &&
+                            !document.referrer.includes('/login'));
+    
+    setIsNavigatedFrom(isFromNavigation);
+    
+    // Add a slight delay only when navigating from other pages
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, isFromNavigation ? 300 : 0); // 300ms delay only for navigation, instant for direct access
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show loading state only when navigating from other pages
+  if (!isMounted && isNavigatedFrom) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Initializing secure login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex relative">
       {/* Desktop: Left Half - Moving Bubbles (60% width), Mobile: Full Screen Background */}
@@ -252,7 +362,7 @@ export const LoginPage: React.FC = () => {
           
           {/* Single Civic Auth Component with responsive styling */}
           <div className="w-full bg-white lg:bg-transparent rounded-lg lg:rounded-none shadow-lg lg:shadow-none p-4 lg:p-0 min-h-[300px] lg:min-h-[400px] flex items-center justify-center">
-            <CivicAuthIframeContainer />
+            {isMounted && <IsolatedCivicAuth />}
           </div>
         </div>
       </div>
