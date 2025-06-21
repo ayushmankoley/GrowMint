@@ -11,6 +11,7 @@ import { ComingSoonPage } from './pages/ComingSoonPage';
 import { CivicAuthComponent } from './components/CivicAuthComponent';
 import { AuthCallback } from './components/AuthCallback';
 import { useAuth } from './hooks/useAuth';
+import TermsPage from './pages/TermsPage';
 
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,17 +21,14 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle auth callback route
   useEffect(() => {
     if (location.pathname === '/auth/callback') {
       return;
     }
 
-    // Check for successful authentication parameter (only for new logins, not page reloads)
     const urlParams = new URLSearchParams(location.search);
     if (urlParams.get('authenticated') === 'true' && user && location.pathname === '/') {
       navigate('/dashboard');
-      // Clean up the URL
       window.history.replaceState({}, '', '/dashboard');
     }
   }, [user, location, navigate]);
@@ -49,7 +47,6 @@ function AppContent() {
     setIsAuthModalOpen(true);
   };
 
-  // Show loading spinner while auth is initializing
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -58,7 +55,6 @@ function AppContent() {
     );
   }
 
-  // Check if we're on a protected route
   const isProtectedRoute = ['/dashboard', '/sales', '/marketing'].includes(location.pathname);
 
   return (
@@ -69,17 +65,15 @@ function AppContent() {
         onAuthClick={handleAuthClick}
       />
       
-      {/* Navigation - only show for authenticated users on protected routes */}
       {user && isProtectedRoute && <Navigation />}
 
       <main>
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<HomePage onGetStarted={handleGetStarted} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/comingsoon" element={<ComingSoonPage />} />
-          
-          {/* Protected Routes */}
+          <Route path="/terms" element={<TermsPage />} /> {/* ✅ TERMS PAGE ROUTE */}
+
           <Route 
             path="/dashboard" 
             element={
@@ -105,22 +99,19 @@ function AppContent() {
             } 
           />
 
-          {/* Catch all route - redirect to home */}
           <Route path="*" element={<HomePage onGetStarted={handleGetStarted} />} />
         </Routes>
       </main>
 
-      {/* Intersection blur effect before footer */}
       <div className="h-32 bg-gradient-to-b from-white via-white/70 to-white"></div>
       
-      {/* Footer */}
       <footer className="bg-white text-gray-900 py-12 mt-0 border-t border-green-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <img 
-                  src="https://raw.githubusercontent.com/ayushmankoley/GrowMint/refs/heads/main/src/images/landscape_logo_ts2.png" 
+                  src="src\\images\\landscape_logo_ts2.png" 
                   alt="GrowMint"
                   className="h-25 w-60 object-contain"
                 />
@@ -151,8 +142,16 @@ function AppContent() {
             </div>
           </div>
           
-          <div className="border-t border-green-100 mt-12 pt-8 text-center text-gray-600">
+          <div className="border-t border-green-100 mt-12 pt-8 text-center text-gray-600 text-sm space-y-2">
             <p>&copy; 2025 GrowMint. All rights reserved.</p>
+            <p>
+              <a 
+                href="/terms" 
+                className="text-green-600 hover:underline transition-colors"
+              >
+                Terms & Conditions
+              </a>
+            </p>
           </div>
         </div>
       </footer>
