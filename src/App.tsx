@@ -8,6 +8,7 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SalesPage } from './pages/SalesPage';
 import { MarketingPage } from './pages/MarketingPage';
+import { ContextEnginePage } from './pages/ContextEnginePage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { CivicAuthComponent } from './components/CivicAuthComponent';
 import { AuthCallback } from './components/AuthCallback';
@@ -57,6 +58,10 @@ function AppContent() {
   }
 
   const isLoginPage = location.pathname === '/login';
+  const isProtectedRoute = location.pathname === '/dashboard' || 
+                          location.pathname === '/sales' || 
+                          location.pathname === '/marketing' ||
+                          location.pathname === '/contextengine';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,7 +74,7 @@ function AppContent() {
             onAuthClick={handleAuthClick}
           />
           
-          {user && ['/dashboard', '/sales', '/marketing'].includes(location.pathname) && <Navigation />}
+          {user && isProtectedRoute && <Navigation />}
         </>
       )}
 
@@ -104,6 +109,14 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <MarketingPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/contextengine" 
+            element={
+              <ProtectedRoute>
+                <ContextEnginePage />
               </ProtectedRoute>
             } 
           />

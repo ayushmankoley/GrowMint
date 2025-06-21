@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
         <nav className="hidden md:flex items-center space-x-8">
           {user && (
             <>
-              {["Dashboard", "Sales", "Marketing", "Analytics"].map((item, index) => (
+              {["Dashboard", "Sales", "Marketing", "Context Engine"].map((item, index) => (
                 <motion.div
                   key={item}
                   initial={{ opacity: 0, y: -10 }}
@@ -66,9 +66,9 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
                   whileHover={{ scale: 1.05 }}
                 >
                   <Link 
-                    to={item === "Analytics" ? "#analytics" : `/${item.toLowerCase()}`}
+                    to={item === "Context Engine" ? "/contextengine" : `/${item.toLowerCase()}`}
                     className={`text-sm hover:text-green-600 transition-colors font-medium ${
-                      location.pathname === `/${item.toLowerCase()}` 
+                      location.pathname === (item === "Context Engine" ? "/contextengine" : `/${item.toLowerCase()}`) 
                         ? 'text-green-600' 
                         : 'text-gray-900'
                     }`}
@@ -144,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
             <div className="flex flex-col space-y-6">
               {user ? (
                 <>
-                  {["Dashboard", "Sales", "Marketing", "Analytics"].map((item, i) => (
+                  {["Dashboard", "Sales", "Marketing", "Context Engine"].map((item, i) => (
                     <motion.div
                       key={item}
                       initial={{ opacity: 0, x: 20 }}
@@ -153,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
                       exit={{ opacity: 0, x: 20 }}
                     >
                       <Link 
-                        to={item === "Analytics" ? "#analytics" : `/${item.toLowerCase()}`}
+                        to={item === "Context Engine" ? "/contextengine" : `/${item.toLowerCase()}`}
                         className="text-base text-gray-900 font-medium" 
                         onClick={toggleMenu}
                       >

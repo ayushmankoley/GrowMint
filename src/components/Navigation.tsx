@@ -42,6 +42,18 @@ export const Navigation: React.FC = () => {
           >
             Marketing Engine
           </NavLink>
+          <NavLink
+            to="/contextengine"
+            className={({ isActive }) =>
+              `py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                isActive
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`
+            }
+          >
+            Context Engine
+          </NavLink>
         </div>
       </div>
     </nav>

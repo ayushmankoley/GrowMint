@@ -272,34 +272,30 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
         {/* Progress Steps */}
         <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {step}
+          <div className="flex items-center justify-center">
+            {[1, 2, 3].map((step, index) => (
+              <React.Fragment key={step}>
+                <div className="flex flex-col items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                    step <= currentStep 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    {step}
+                  </div>
+                  <div className="mt-2 text-xs font-medium text-center">
+                    <span className={step <= currentStep ? 'text-blue-600' : 'text-gray-500'}>
+                      {step === 1 ? 'Basic Info' : step === 2 ? 'Upload Context' : 'Review & Create'}
+                    </span>
+                  </div>
                 </div>
-                {step < 3 && (
-                  <div className={`w-16 h-1 mx-2 ${
+                {index < 2 && (
+                  <div className={`flex-1 h-1 mx-4 rounded-full transition-colors ${
                     step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
                   }`} />
                 )}
-              </div>
+              </React.Fragment>
             ))}
-          </div>
-          <div className="flex justify-between mt-2 text-sm">
-            <span className={currentStep >= 1 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
-              Basic Info
-            </span>
-            <span className={currentStep >= 2 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
-              Upload Context
-            </span>
-            <span className={currentStep >= 3 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
-              Review & Create
-            </span>
           </div>
         </div>
 
@@ -514,11 +510,11 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
               {contextFiles.length > 0 && (
                 <div className="border border-gray-300 rounded-xl p-4">
                   <h4 className="font-medium text-gray-900 mb-3">Added Context ({contextFiles.length})</h4>
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
                     {contextFiles.map((file) => (
-                      <div key={file.id} className="bg-gray-50 p-3 rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start space-x-3 flex-1">
+                      <div key={file.id} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start space-x-3 flex-1 min-w-0">
                             <div className="flex-shrink-0 mt-0.5">
                               {file.type === 'text' && <FileText className="h-4 w-4 text-blue-600" />}
                               {file.type === 'image' && <Image className="h-4 w-4 text-green-600" />}
@@ -526,37 +522,40 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                               {file.type === 'url' && <Globe className="h-4 w-4 text-purple-600" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-2 mb-2">
                                 <span className="text-sm font-medium text-gray-900 truncate">{file.name}</span>
                                 {file.type === 'url' && file.scrapedData && (
-                                  <span className="inline-flex items-center space-x-1 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                  <span className="inline-flex items-center space-x-1 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex-shrink-0">
                                     <Sparkles className="h-3 w-3" />
                                     <span>AI Analyzed</span>
                                   </span>
                                 )}
                               </div>
                               
-                              {/* Show scraped data for URLs */}
+                              {/* Show scraped data for URLs with better spacing */}
                               {file.type === 'url' && file.scrapedData && (
-                                <div className="mt-2 space-y-1">
-                                  <p className="text-xs text-gray-600 line-clamp-2">
+                                <div className="mt-2 space-y-2 p-3 bg-white rounded-md border border-gray-100">
+                                  <p className="text-xs text-gray-600 leading-relaxed">
                                     {file.scrapedData.summary}
                                   </p>
                                   {file.scrapedData.keyPoints.length > 0 && (
-                                    <div className="flex flex-wrap gap-1">
-                                      {file.scrapedData.keyPoints.slice(0, 3).map((point, index) => (
-                                        <span key={index} className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded">
-                                          {point.length > 30 ? `${point.substring(0, 30)}...` : point}
-                                        </span>
-                                      ))}
-                                      {file.scrapedData.keyPoints.length > 3 && (
-                                        <span className="text-xs text-gray-500">
-                                          +{file.scrapedData.keyPoints.length - 3} more
-                                        </span>
-                                      )}
+                                    <div className="space-y-1">
+                                      <div className="text-xs font-medium text-gray-700">Key Points:</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {file.scrapedData.keyPoints.slice(0, 3).map((point, index) => (
+                                          <span key={index} className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                                            {point.length > 25 ? `${point.substring(0, 25)}...` : point}
+                                          </span>
+                                        ))}
+                                        {file.scrapedData.keyPoints.length > 3 && (
+                                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                            +{file.scrapedData.keyPoints.length - 3} more
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
                                   )}
-                                  <div className="flex items-center space-x-3 text-xs text-gray-500">
+                                  <div className="flex items-center space-x-3 text-xs text-gray-500 pt-1 border-t border-gray-100">
                                     <span>{file.scrapedData.metadata.domain}</span>
                                     <span>•</span>
                                     <span>{file.scrapedData.metadata.wordCount} words</span>
@@ -566,16 +565,18 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                               
                               {/* Show content preview for text */}
                               {file.type === 'text' && (
-                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                                  {file.content.substring(0, 100)}...
-                                </p>
+                                <div className="mt-2 p-2 bg-white rounded-md border border-gray-100">
+                                  <p className="text-xs text-gray-600 leading-relaxed">
+                                    {file.content.length > 150 ? `${file.content.substring(0, 150)}...` : file.content}
+                                  </p>
+                                </div>
                               )}
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeContextFile(file.id)}
-                            className="text-red-600 hover:text-red-700 text-sm ml-2 flex-shrink-0"
+                            className="text-red-600 hover:text-red-700 text-sm flex-shrink-0 hover:bg-red-50 px-2 py-1 rounded transition-colors"
                           >
                             Remove
                           </button>
