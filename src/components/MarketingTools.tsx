@@ -1,4 +1,3 @@
-// ✅ All imports remain unchanged
 import React, { useState, useEffect } from 'react';
 import {
   Repeat, Mail, Globe, SplitSquareVertical, Newspaper, Lightbulb, Zap,
@@ -52,7 +51,7 @@ const marketingTools = [
   }
 ];
 
-// Placeholder text for suggestion box
+
 const toolHintPlaceholder: { [key: string]: string } = {
   'content-repurposer': 'Add tone or format preferences (optional)',
   'marketing-email': 'Suggest a call-to-action or focus (optional)',
@@ -95,7 +94,6 @@ export const MarketingTools: React.FC = () => {
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
-  // Input states
   const [repurposeInput, setRepurposeInput] = useState('');
   const [userHint, setUserHint] = useState('');
   const [toolSpecificInput, setToolSpecificInput] = useState('');
@@ -127,7 +125,6 @@ export const MarketingTools: React.FC = () => {
     setToolSpecificInput('');
   }, [selectedTool]);
 
-  // Function to check if required fields are filled
   const isFormValid = (): boolean => {
     if (!selectedProject) return false;
     
@@ -140,7 +137,6 @@ export const MarketingTools: React.FC = () => {
       case 'marketing-email':
       case 'newsletter':
       case 'campaign-idea':
-        // These tools don't have required fields, only optional suggestions
         return true;
       default:
         return true;
@@ -305,14 +301,10 @@ export const MarketingTools: React.FC = () => {
   };
   
   
-  
-  
-
-  
 
   const handleGenerate = async () => {
     if (!isFormValid()) {
-      return; // Button should be disabled, but just in case
+      return; 
     }
 
     setIsGenerating(true);

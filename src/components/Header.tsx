@@ -16,7 +16,6 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if we're on a protected route
   const isProtectedRoute = ['/dashboard', '/sales', '/marketing'].includes(location.pathname);
 
   const handleLogoClick = () => {

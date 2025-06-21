@@ -12,6 +12,8 @@ import { CivicAuthComponent } from './components/CivicAuthComponent';
 import { AuthCallback } from './components/AuthCallback';
 import { useAuth } from './hooks/useAuth';
 import TermsPage from './pages/TermsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+
 
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -73,6 +75,8 @@ function AppContent() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/comingsoon" element={<ComingSoonPage />} />
           <Route path="/terms" element={<TermsPage />} /> {/* ✅ TERMS PAGE ROUTE */}
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+
 
           <Route 
             path="/dashboard" 
@@ -150,6 +154,13 @@ function AppContent() {
                 className="text-green-600 hover:underline transition-colors"
               >
                 Terms & Conditions
+              </a>
+              <span> || </span>
+              <a 
+                href="/privacy" 
+                className="text-green-600 hover:underline transition-colors"
+              >
+                Privacy Policy
               </a>
             </p>
           </div>
