@@ -100,6 +100,7 @@ export const ContextEngine: React.FC = () => {
   const [conversationTitle, setConversationTitle] = useState('');
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingContext, setLoadingContext] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch initial data
@@ -203,6 +204,7 @@ export const ContextEngine: React.FC = () => {
 
   const fetchProjectContext = async (projectId: string) => {
     try {
+      setLoadingContext(true);
       const { data, error } = await supabase
         .from('project_context')
         .select('*')
@@ -215,6 +217,24 @@ export const ContextEngine: React.FC = () => {
     } catch (error) {
       console.error('Error fetching project context:', error);
       setProjectContexts([]);
+    } finally {
+      setLoadingContext(false);
+    }
+  };
+
+  const fetchProjectDetails = async (projectId: string): Promise<Project | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+      return null;
     }
   };
 
@@ -294,11 +314,19 @@ export const ContextEngine: React.FC = () => {
     }
   };
 
-  const selectConversation = (conversation: Conversation) => {
+  const selectConversation = async (conversation: Conversation) => {
+    // If conversation doesn't have project data but has project_id, fetch it
+    if (conversation.project_id && !conversation.project) {
+      const projectDetails = await fetchProjectDetails(conversation.project_id);
+      if (projectDetails) {
+        conversation.project = projectDetails;
+      }
+    }
+    
     setCurrentConversation(conversation);
     fetchMessages(conversation.id);
     if (conversation.project_id) {
-      fetchProjectContext(conversation.project_id);
+      await fetchProjectContext(conversation.project_id);
     }
   };
 
@@ -351,7 +379,12 @@ Please respond from the perspective of this role and tailor your advice accordin
 ` : '';
 
     // Build project context with detailed information
-    const projectContext = project ? `
+    const projectContextString = buildProjectContextString(projectContexts);
+    
+    // Handle case where project details might be missing but we have project context
+    let projectContext = '';
+    if (project) {
+      projectContext = `
 Project Overview:
 - Name: ${project.name}
 - Description: ${project.description || 'N/A'}
@@ -360,8 +393,21 @@ Project Overview:
 - Status: ${project.status}
 - AI Summary: ${project.context_summary || 'N/A'}
 
-${buildProjectContextString(projectContexts)}
-` : '';
+${projectContextString}
+`;
+    } else if (projectContexts.length > 0) {
+      // If we have project context but no project details, use the context
+      projectContext = `
+Project Information:
+- Project ID: ${conversation.project_id || 'N/A'}
+- Note: Basic project details are not available, but detailed context is provided below
+
+${projectContextString}
+`;
+    }
+
+    // Determine project name for reference
+    const projectName = project?.name || (projectContexts.length > 0 ? 'Project' : 'Unknown Project');
 
     // Build chat history
     const historyContext = chatHistory.length > 0 ? `
@@ -370,35 +416,48 @@ ${chatHistory.map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.c
 ` : '';
 
     return `
-GLOBAL RULES:
-- Do not use em dashes (—) anywhere, use regular hyphens (-) instead
-- Do not use emojis
-- Always use a natural, human-like tone
-- Use the provided project context extensively to give specific, personalized advice
-- Reference specific details from the project context when relevant
-- Do not hallucinate or make up information - only use the provided context
-- Do not generate tables - use bullet points or numbered lists instead
-- Be helpful, insightful, and provide actionable advice
-- Keep responses focused and relevant to the project and conversation context
+CRITICAL INSTRUCTIONS - READ CAREFULLY:
+1. You MUST ONLY use information from the provided project context below
+2. DO NOT make up, invent, or hallucinate any information not explicitly provided
+3. If the project context doesn't contain relevant information, say so explicitly
+4. DO NOT reference any projects, companies, or details not mentioned in the context
+5. ALWAYS reference the actual project name: "${projectName}"
+6. Do not use em dashes (—) anywhere, use regular hyphens (-) instead
+7. Do not use emojis
+8. Always use a natural, human-like tone
+9. Do not generate tables - use bullet points or numbered lists instead
+10. Be helpful and provide actionable advice based ONLY on the provided context
 
-You are an intelligent business advisor and strategist helping with project-related questions and discussions. You have access to detailed context about this specific project including uploaded documents, website data, and other relevant information.
+You are an intelligent business advisor helping with project-related questions. You have access to specific context about this project. You must base your responses EXCLUSIVELY on the information provided below.
 
 ${personaContext}
+
+PROJECT INFORMATION (USE ONLY THIS INFORMATION):
 ${projectContext}
+
 ${historyContext}
 
-IMPORTANT: Use the detailed project context above to provide specific, personalized responses. Reference the actual content, key points, and business information from the uploaded context when relevant to the user's question.
+STRICT REQUIREMENT: Your response must be based entirely on the project information provided above. If the context doesn't contain enough information to answer the question, explicitly state that the available project context is insufficient.
 
 Current User Message: ${userMessage}
 
-Please provide a helpful, contextual response based on the comprehensive project information and conversation history. Focus on practical, actionable insights that would be valuable for someone working on this specific project, using the detailed context provided.
-
-Format your response in clean markdown with proper headers, bullet points, and formatting when appropriate.
+Provide a response using ONLY the project information provided above. Reference the actual project name "${projectName}" and use only the details from the project context.
 `;
   };
 
   const sendMessage = async () => {
     if (!user || !currentConversation || !newMessage.trim()) return;
+    
+    // Check if context is still loading
+    if (loadingContext) {
+      alert('Please wait for project context to load before sending a message.');
+      return;
+    }
+    
+    // Ensure project context is loaded for this conversation
+    if (currentConversation.project_id && projectContexts.length === 0) {
+      await fetchProjectContext(currentConversation.project_id);
+    }
     
     const userMessage = newMessage.trim();
     setNewMessage('');
@@ -455,7 +514,7 @@ Format your response in clean markdown with proper headers, bullet points, and f
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 h-screen flex flex-col">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-40 h-screen flex flex-col">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Context Engine</h1>
         <p className="text-gray-600">Intelligent conversations about your projects with AI</p>
@@ -494,7 +553,7 @@ Format your response in clean markdown with proper headers, bullet points, and f
                         ? 'bg-green-100 border border-green-300'
                         : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => selectConversation(conversation)}
+                    onClick={async () => await selectConversation(conversation)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -568,6 +627,7 @@ Format your response in clean markdown with proper headers, bullet points, and f
                   <p className="text-sm text-gray-500">
                     {currentConversation.project?.name}
                     {currentConversation.persona && ` • ${currentConversation.persona.persona_name}`}
+                    {loadingContext ? ' • Loading context...' : projectContexts.length > 0 ? ` • ${projectContexts.length} context items` : ' • No context items'}
                   </p>
                 </div>
               )}
@@ -577,83 +637,101 @@ Format your response in clean markdown with proper headers, bullet points, and f
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {currentConversation ? (
-              messages.length === 0 ? (
-                <div className="text-center py-8">
-                  <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Start a conversation</h3>
-                  <p className="text-gray-500">
-                    Ask questions about your project, get strategic advice, or brainstorm ideas.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
+              <>
+                {/* Context Warning */}
+                {!loadingContext && projectContexts.length === 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-yellow-400 rounded-full flex-shrink-0"></div>
+                      <div>
+                        <p className="text-sm font-medium text-yellow-800">No project context available</p>
+                        <p className="text-xs text-yellow-700">
+                          This project doesn't have any uploaded context (documents, URLs, text). 
+                          The AI will provide general advice but won't have specific project details.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {messages.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Start a conversation</h3>
+                    <p className="text-gray-500">
+                      Ask questions about your project, get strategic advice, or brainstorm ideas.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {messages.map((message) => (
                       <div
-                        className={`max-w-3xl rounded-lg p-4 ${
-                          message.role === 'user'
-                            ? 'bg-green-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
-                        }`}
+                        key={message.id}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className="flex items-start space-x-2">
-                          {message.role === 'assistant' && (
-                            <Bot className="h-5 w-5 text-gray-500 mt-1 flex-shrink-0" />
-                          )}
-                          <div className="flex-1">
-                            {message.role === 'assistant' ? (
-                              <div className="prose prose-sm max-w-none">
-                                <ReactMarkdown 
-                                  remarkPlugins={[remarkBreaks]}
-                                  components={{
-                                    p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-                                    h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-gray-900">{children}</h1>,
-                                    h2: ({ children }) => <h2 className="text-base font-semibold mb-2 text-gray-800">{children}</h2>,
-                                    h3: ({ children }) => <h3 className="text-sm font-medium mb-1 text-gray-800">{children}</h3>,
-                                    ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1">{children}</ul>,
-                                    ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1">{children}</ol>,
-                                    li: ({ children }) => <li className="text-gray-700">{children}</li>,
-                                    strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                                    code: ({ children }) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">{children}</code>,
-                                  }}
-                                >
-                                  {message.content}
-                                </ReactMarkdown>
-                              </div>
-                            ) : (
-                              <p className="whitespace-pre-wrap">{message.content}</p>
+                        <div
+                          className={`max-w-3xl rounded-lg p-4 ${
+                            message.role === 'user'
+                              ? 'bg-green-600 text-white'
+                              : 'bg-gray-100 text-gray-900'
+                          }`}
+                        >
+                          <div className="flex items-start space-x-2">
+                            {message.role === 'assistant' && (
+                              <Bot className="h-5 w-5 text-gray-500 mt-1 flex-shrink-0" />
+                            )}
+                            <div className="flex-1">
+                              {message.role === 'assistant' ? (
+                                <div className="prose prose-sm max-w-none">
+                                  <ReactMarkdown 
+                                    remarkPlugins={[remarkBreaks]}
+                                    components={{
+                                      p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+                                      h1: ({ children }) => <h1 className="text-lg font-bold mb-2 text-gray-900">{children}</h1>,
+                                      h2: ({ children }) => <h2 className="text-base font-semibold mb-2 text-gray-800">{children}</h2>,
+                                      h3: ({ children }) => <h3 className="text-sm font-medium mb-1 text-gray-800">{children}</h3>,
+                                      ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1">{children}</ul>,
+                                      ol: ({ children }) => <ol className="list-decimal pl-5 mb-3 space-y-1">{children}</ol>,
+                                      li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                                      strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                                      code: ({ children }) => <code className="bg-gray-200 px-1 py-0.5 rounded text-sm font-mono">{children}</code>,
+                                    }}
+                                  >
+                                    {message.content}
+                                  </ReactMarkdown>
+                                </div>
+                              ) : (
+                                <p className="whitespace-pre-wrap">{message.content}</p>
+                              )}
+                            </div>
+                            {message.role === 'assistant' && (
+                              <button
+                                onClick={() => copyToClipboard(message.content)}
+                                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </button>
                             )}
                           </div>
-                          {message.role === 'assistant' && (
-                            <button
-                              onClick={() => copyToClipboard(message.content)}
-                              className="text-gray-400 hover:text-gray-600 flex-shrink-0"
-                            >
-                              <Copy className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
-                        <div className="text-xs opacity-70 mt-2">
-                          {new Date(message.created_at).toLocaleTimeString()}
+                          <div className="text-xs opacity-70 mt-2">
+                            {new Date(message.created_at).toLocaleTimeString()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  {isGenerating && (
-                    <div className="flex justify-start">
-                      <div className="bg-gray-100 rounded-lg p-4 flex items-center space-x-2">
-                        <Bot className="h-5 w-5 text-gray-500" />
-                        <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                        <span className="text-sm text-gray-500">Thinking...</span>
+                    ))}
+                    {isGenerating && (
+                      <div className="flex justify-start">
+                        <div className="bg-gray-100 rounded-lg p-4 flex items-center space-x-2">
+                          <Bot className="h-5 w-5 text-gray-500" />
+                          <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                          <span className="text-sm text-gray-500">Thinking...</span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </>
-              )
+                    )}
+                    <div ref={messagesEndRef} />
+                  </>
+                )}
+              </>
             ) : (
               <div className="text-center py-8">
                 <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />

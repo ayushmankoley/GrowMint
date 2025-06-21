@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ isMenuOpen, setIsMenuOpen, onAut
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isProtectedRoute = ['/dashboard', '/sales', '/marketing'].includes(location.pathname);
+  const isProtectedRoute = ['/dashboard', '/sales', '/marketing', '/contextengine'].includes(location.pathname);
 
   const handleLogoClick = () => {
     navigate('/');
