@@ -13,7 +13,7 @@ function fetchWithProxy(url: string, params: RequestInit = {}) {
     ...params,
     headers: {
       ...params.headers,
-      'x-cors-api-key': 'temp_694cce4a5a758e2a74f2022a1fcf3238'
+      'x-cors-api-key': 'temp_d36cb50c91047a673070b8d10bdf5eba'
     }
   });
 }
