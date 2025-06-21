@@ -18,7 +18,6 @@ export const CivicAuthComponent: React.FC<CivicAuthComponentProps> = ({
   // Auto-close modal when user successfully signs in
   useEffect(() => {
     if (user && isOpen && !isLoading) {
-      console.log('User authenticated, closing modal');
       onClose();
     }
   }, [user, isOpen, isLoading, onClose]);

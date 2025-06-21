@@ -13,21 +13,12 @@ export const CivicAuthProvider: React.FC<CivicAuthProviderProps> = ({ children }
     return <div>Error: Civic Auth Client ID is not configured</div>;
   }
 
-  const handleSignIn = (error?: Error) => {
-    if (error) {
-      console.error('Sign-in error:', error);
-    } else {
-      console.log('Sign-in successful');
-      // Close any modals if we're in OAuth callback mode
-      if (window.location.pathname === '/auth/callback') {
-        // Let the AuthCallback component handle the redirect
-        return;
-      }
-    }
+  const handleSignIn = () => {
+    // Handle successful sign-in
   };
 
   const handleSignOut = async () => {
-    console.log('User signed out');
+    // Handle sign-out
   };
 
   return (

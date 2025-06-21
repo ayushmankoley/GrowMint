@@ -1,66 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@civic/auth/react';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthCallback: React.FC = () => {
   const { user, isLoading, error } = useUser();
   const [countdown, setCountdown] = useState(5); // Wait 5 seconds instead of 2
-  const [processingComplete, setProcessingComplete] = useState(false);
+  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Give Civic Auth time to process the OAuth callback
-    const timer = setTimeout(() => {
-      setProcessingComplete(true);
-    }, 5000); // Increased from 2000 to 5000
-
-    // Countdown timer for user feedback
-    const countdownTimer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(countdownTimer);
-          return 0;
-        }
-        return prev - 1;
-      });
+    const timer = setInterval(() => {
+      setCountdown((prev) => Math.max(0, prev - 1));
     }, 1000);
 
-    return () => {
-      clearTimeout(timer);
-      clearInterval(countdownTimer);
-    };
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    console.log('AuthCallback state:', { 
-      user: user ? { id: user.id, email: user.email } : null, 
-      isLoading, 
-      error: error?.message,
-      processingComplete 
-    });
-
-    // Once processing is complete and we have auth state, redirect
-    if (processingComplete && !isLoading) {
-      if (error) {
-        console.error('Authentication error:', error);
-        window.location.href = '/?auth=error';
-      } else if (user) {
-        console.log('Authentication successful, redirecting to dashboard...');
-        // Redirect to dashboard since user is authenticated
-        window.location.href = '/?authenticated=true';
-      } else {
-        // No user but no error - still redirect to home
-        console.log('No user detected after timeout, redirecting to home');
-        window.location.href = '/';
-      }
+    if (user && !isProcessingComplete) {
+      setIsProcessingComplete(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
     }
-  }, [processingComplete, isLoading, user, error]);
+  }, [user, navigate, isProcessingComplete]);
 
-  // If user is detected early, redirect immediately
   useEffect(() => {
-    if (user && !isLoading) {
-      console.log('User detected early, redirecting...');
-      window.location.href = '/?authenticated=true';
+    if (!user && countdown === 0 && !isProcessingComplete) {
+      navigate('/');
     }
-  }, [user, isLoading]);
+  }, [user, countdown, navigate, isProcessingComplete]);
+
+  useEffect(() => {
+    if (user && countdown > 3) {
+      navigate('/dashboard');
+    }
+  }, [user, countdown, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -79,7 +54,7 @@ export const AuthCallback: React.FC = () => {
               hasUser: !!user,
               isLoading,
               hasError: !!error,
-              processingComplete
+              processingComplete: isProcessingComplete
             })}</p>
           </div>
         )}

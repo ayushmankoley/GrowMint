@@ -32,12 +32,6 @@ export const useAuth = () => {
 
       // Only process once per user session to avoid repeated syncs
       if (civicUser && !hasInitialized) {
-        console.log('🔐 Civic Auth: User authenticated, setting up session...', {
-          id: civicUser.id,
-          email: civicUser.email,
-          name: civicUser.name
-        });
-
         setHasInitialized(true);
         
         // Create user object compatible with existing interface
@@ -61,7 +55,7 @@ export const useAuth = () => {
         // Optional: Sync user profile to Supabase (only once per session)
         try {
           // Check if user already exists first
-          const { data: existingUser, error: checkError } = await supabase
+          const { error: checkError } = await supabase
             .from('profiles')
             .select('id')
             .eq('id', civicUser.id)
@@ -69,7 +63,6 @@ export const useAuth = () => {
 
           if (checkError && checkError.code === 'PGRST116') {
             // User doesn't exist, create new profile
-            console.log('📊 Creating new user profile...');
             const { error: insertError } = await supabase
               .from('profiles')
               .insert({
@@ -83,12 +76,7 @@ export const useAuth = () => {
 
             if (insertError) {
               console.error('❌ Error creating user profile:', insertError);
-            } else {
-              console.log('✅ User profile created successfully');
             }
-          } else if (existingUser) {
-            // User exists, optionally update with latest info (less frequent)
-            console.log('👤 User profile already exists, skipping sync');
           }
 
         } catch (error) {
@@ -96,7 +84,6 @@ export const useAuth = () => {
         }
       } else if (!civicUser && hasInitialized) {
         // User logged out
-        console.log('🔓 User logged out, clearing session...');
         setUser(null);
         setSession(null);
         setHasInitialized(false);
@@ -111,7 +98,6 @@ export const useAuth = () => {
 
   const signOut = async () => {
     // Reset local state
-    console.log('🔓 Signing out...');
     setUser(null);
     setSession(null);
     setHasInitialized(false);
