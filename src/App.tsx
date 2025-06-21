@@ -120,7 +120,7 @@ function AppContent() {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <img 
-                  src="..\images\landscape_logo_ts2.png" 
+                  src="https://github.com/ayushmankoley/GrowMint/blob/main/src/images/landscape_logo_ts2.png" 
                   alt="GrowMint"
                   className="h-25 w-60 object-contain"
                 />
