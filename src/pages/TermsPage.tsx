@@ -1,6 +1,6 @@
 const TermsPage = () => (
     
-    <div className="max-w-3xl mx-auto py-10 px-4 text-gray-800">
+    <div className="max-w-3xl mx-auto py-10 px-4 text-gray-800 mt-20">
       <h1 className="text-3xl font-bold mb-6">Terms & Conditions</h1>
       <p className="mb-4">
         Welcome to GrowMint. By using our platform, you agree to comply with and be bound by the following terms and conditions of use.

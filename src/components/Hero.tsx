@@ -48,36 +48,36 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
       }} />
       
       {/* Content Overlay */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
         <div className="flex justify-center mb-6">
-          <div className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/20">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm text-white px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium border border-white/20">
+            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>AI-Powered Sales & Marketing Copilot</span>
           </div>
         </div>
 
-        <h1 className="text-6xl lg:text-8xl font-black mb-6 leading-tight tracking-tight text-black">
+        <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 leading-tight tracking-tight text-black px-4 sm:px-0">
           GrowMint
         </h1>
         
-        <p className="text-2xl lg:text-4xl mb-6 font-black tracking-wide text-black">
+        <p className="text-xl sm:text-2xl lg:text-4xl mb-6 font-black tracking-wide text-black px-4 sm:px-0">
           Sell smarter. Market sharper.
         </p>
         
-        <p className="text-xl lg:text-2xl mb-12 max-w-4xl mx-auto leading-relaxed font-bold text-black">
+        <p className="text-lg sm:text-xl lg:text-2xl mb-12 max-w-4xl mx-auto leading-relaxed font-bold text-black px-6 sm:px-4 lg:px-0">
           Stop juggling tools. Transform leads into revenue with AI-powered sales and marketing automation.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-6 sm:px-0">
           <button
             onClick={onGetStarted}
-            className="bg-green-700 text-white px-8 py-4 rounded-xl font-semibold text-lg border-2 border-green-700 hover:bg-green-800 hover:border-green-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
+            className="bg-green-700 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-green-700 hover:bg-green-800 hover:border-green-800 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 shadow-lg w-full sm:w-auto"
           >
             <span>Start Your First Project</span>
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           
-          <button className="bg-white text-black px-8 py-4 rounded-xl font-semibold text-lg border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-105 shadow-lg">
+          <button className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto">
             Watch Demo
           </button>
         </div>

@@ -2,6 +2,8 @@ import React from 'react';
 import { Hero } from '../components/Hero';
 import { Target, TrendingUp, Users, BarChart3, MessageSquare } from 'lucide-react';
 import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { AnimatedGradient } from "../components/AnimatedGradient";
 import { TestimonialsColumn } from "../components/TestimonialsColumn";
 import { PricingSection } from "../components/PricingSection";
@@ -27,6 +29,9 @@ const BentoCard: React.FC<BentoCardProps> = ({
   delay,
   icon: Icon,
 }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -44,7 +49,11 @@ const BentoCard: React.FC<BentoCardProps> = ({
   };
 
   const handleClick = () => {
-    window.location.href = '/dashboard';
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
   };
 
   // Get a darker shade for the icon background based on the gradient colors
@@ -72,7 +81,7 @@ const BentoCard: React.FC<BentoCardProps> = ({
     >
       <AnimatedGradient colors={colors} speed={0.05} blur="medium" />
       <motion.div
-        className="relative z-10 p-3 sm:p-5 md:p-8 text-black backdrop-blur-sm h-full"
+        className="relative z-10 p-4 sm:p-5 md:p-8 text-black backdrop-blur-sm h-full"
         variants={container}
         initial="hidden"
         animate="show"
@@ -306,19 +315,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       <Hero onGetStarted={onGetStarted} />
       
       {/* Your Arsenal of AI-Powered Revenue Tools */}
-      <section className="bg-white py-1">
+      <section className="bg-white py-8 px-6 sm:py-1 sm:px-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-1">
-            <h2 className="text-4xl lg:text-5xl font-black text-black mb-4">
+          <div className="text-center mb-8 sm:mb-1">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-black mb-6 sm:mb-4 px-2">
               Your Arsenal of AI-Powered Revenue Tools
             </h2>
-            <p className="text-xl text-gray-700 max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-700 max-w-4xl mx-auto px-4 sm:px-0">
               Stop juggling multiple platforms. Access specialized AI agents that handle your entire revenue engine from first contact to closed deal, all in one unified workspace.
             </p>
           </div>
 
-          <div className="w-full bg-white h-full min-h-[800px]">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+          <div className="w-full bg-white h-full min-h-[800px] px-2 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 h-full">
               {/* Sales Engine - Large Card */}
               <div className="md:col-span-2">
                 <BentoCard
@@ -388,14 +397,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-white py-2">
+      <section className="bg-white py-4 px-6 sm:py-2 sm:px-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="flex flex-col items-center justify-center max-w-[540px] mx-auto"
+            className="flex flex-col items-center justify-center max-w-[540px] mx-auto px-4 sm:px-0"
           >
             <div className="flex justify-center">
               <div className="border border-green-200 py-1 px-4 rounded-lg bg-green-50 text-green-700 font-medium">
@@ -403,15 +412,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               </div>
             </div>
 
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter mt-5 text-black">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter mt-5 text-black px-2 sm:px-0 text-center">
               What our users say
             </h2>
-            <p className="text-center mt-5 opacity-75 text-gray-700">
+            <p className="text-center mt-5 opacity-75 text-gray-700 px-2 sm:px-0">
               See how GrowMint is transforming revenue teams worldwide.
             </p>
           </motion.div>
 
-          <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
+          <div className="flex justify-center gap-4 sm:gap-6 mt-6 sm:mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden px-2 sm:px-0">
             <TestimonialsColumn testimonials={firstColumn} duration={15} />
             <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />
             <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
@@ -420,7 +429,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-white py-12">
+      <section className="bg-white py-4 sm:py-12 px-6 sm:px-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative flex justify-center items-center w-full scale-90">
             <div className="absolute inset-0 -z-10">

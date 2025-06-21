@@ -1,5 +1,5 @@
 const PrivacyPolicyPage = () => (
-    <div className="max-w-3xl mx-auto py-10 px-4 text-gray-800">
+    <div className="max-w-3xl mx-auto py-10 px-4 text-gray-800 mt-20">
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
       <p className="mb-4">
         At GrowMint, your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information.

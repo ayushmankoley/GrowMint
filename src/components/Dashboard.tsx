@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Calendar, TrendingUp, Mail, FileText } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { ProjectCard } from './ProjectCard';
 import { CreateProjectModal } from './CreateProjectModal';
 import { ProjectDetailsModal } from './ProjectDetailsModal';
@@ -170,8 +171,8 @@ export const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
         </div>
       </div>
     );
@@ -197,71 +198,43 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeProjects}</p>
-              </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <FileText className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm mt-2">
-              {stats.activeProjects === 0 ? 'No active projects' : `${stats.totalProjects - stats.activeProjects} completed`}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Projects</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalProjects}</p>
-              </div>
-              <div className="bg-teal-100 rounded-full p-3">
-                <TrendingUp className="h-6 w-6 text-teal-600" />
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm mt-2">
-              {stats.totalProjects === 0 ? 'Create your first project' : 'All time'}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Avg Progress</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.avgProgress}%</p>
-              </div>
-              <div className="bg-orange-100 rounded-full p-3">
-                <Mail className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm mt-2">
-              {stats.totalProjects === 0 ? 'No data yet' : 'Across all projects'}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {projects.filter(p => {
-                    const created = new Date(p.created_at);
-                    const now = new Date();
-                    return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-                  }).length}
-                </p>
-              </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <Calendar className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-            <p className="text-gray-500 text-sm mt-2">New projects</p>
-          </div>
-        </div>
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" 
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+          initial="hidden" 
+          animate="visible"
+        >
+          {[
+            ['Active Projects', stats.activeProjects],
+            ['Total Projects', stats.totalProjects],
+            ['Avg. Progress', `${stats.avgProgress}%`],
+            ['New This Month', projects.filter(p => {
+              const d = new Date(p.created_at);
+              const now = new Date();
+              return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).length],
+          ].map(([label, value], idx) => (
+            <motion.div
+              key={idx}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className="bg-white border border-[#4baf20] rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300"
+            >
+              <p className="text-sm text-gray-700 font-semibold">{label}</p>
+              <p className="text-4xl font-black text-[#4baf20] mt-2">{value}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
 
       {/* Search and Filter */}
