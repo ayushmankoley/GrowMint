@@ -307,34 +307,34 @@ export const SalesTools: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Tool Selection */}
+        
         <div className="lg:col-span-1">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Choose Your Tool</h2>
           <div className="space-y-3">
-            {salesTools.map((tool) => {
-              const IconComponent = tool.icon;
-              return (
-                <button
-                  key={tool.id}
-                  onClick={() => setSelectedTool(tool.id)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 ${
-                    selectedTool === tool.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 bg-white'
-                  }`}
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${tool.gradient}`}>
-                      <IconComponent className="h-5 w-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{tool.name}</h3>
-                      <p className="text-sm text-gray-600">{tool.description}</p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+          {salesTools.map((tool) => {
+  const IconComponent = tool.icon;
+  const isSelected = selectedTool === tool.id;
+  return (
+    <button
+      key={tool.id}
+      onClick={() => setSelectedTool(tool.id)}
+      className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 bg-white ${
+        isSelected ? 'bg-[#c2f2aecc]' : 'border-green-400'
+      }`}
+    >
+      <div className="flex items-start space-x-3">
+        <div className={`p-2 rounded-lg bg-gradient-to-r ${tool.gradient}`}>
+          <IconComponent className="h-5 w-5 text-white" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-gray-900 mb-1">{tool.name}</h3>
+          <p className="text-sm text-gray-600">{tool.description}</p>
+        </div>
+      </div>
+    </button>
+  );
+})}
+
           </div>
         </div>
 
@@ -342,10 +342,10 @@ export const SalesTools: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-50 to-teal-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-[#c2f2aecc] to-teal-50 px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gradient-to-r from-blue-600 to-teal-600 rounded-lg">
+                  <div className="p-2 bg-gradient-to-r from-[#4c912ecc] to-[green] rounded-lg">
                     <Zap className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -363,7 +363,7 @@ export const SalesTools: React.FC = () => {
                   <select
                     value={selectedProject ?? ''}
                     onChange={(e) => setSelectedProject(e.target.value)}
-                    className="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#72f839cc]"
                   >
                     <option value="" disabled>Select a project</option>
                     {projects.map(project => (
@@ -396,12 +396,12 @@ export const SalesTools: React.FC = () => {
                   </div>
 
                   <div className="flex space-x-3">
-                    <button className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button className="flex-1 bg-[#90fd90] text-black py-2 px-4 rounded-lg hover:bg-transparent hover:bg-[#58f258] transition-colors">
                       Use This Content
                     </button>
                     <button 
                       onClick={handleGenerate}
-                      className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
                     >
                       Generate Alternative
                     </button>
