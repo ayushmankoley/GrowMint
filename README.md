@@ -12,7 +12,7 @@
 
 **Transform your business ideas into reality with AI-powered tools for sales, marketing, and intelligent project management.**
 
-[Live Demo](https://your-demo-url.com) • [Documentation](#documentation) • [Contributing](#contributing)
+[Live Demo](https://growmint.netlify.app/)
 
 </div>
 
