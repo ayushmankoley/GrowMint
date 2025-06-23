@@ -85,9 +85,14 @@ export const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
             <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
           
-          <button className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto">
+          <a 
+            href="https://youtu.be/4dmMzMvQwlk" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto inline-block text-center"
+          >
             Watch Demo
-          </button>
+          </a>
         </div>
       </div>
     </section>
